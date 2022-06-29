@@ -6,6 +6,8 @@ const multer = require('multer')
 const path = require('path')
 const fs = require('fs');
 
+let photo = require("./models/photo")
+
 //use express static folder
 app.use(express.static("./public"))
 
@@ -15,25 +17,37 @@ app.use(bodyparser.urlencoded({
     extended: true
 }))
 
-// Database connection
-const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "Mary@31547207",
-    database: "photo_upload"
-})
+app.use(express.static('public'));
+app.use('/images', express.static('images'));
 
-db.connect(function (err) {
-    if (err) {
-        return console.error('error: ' + err.message);
-    }
-    console.log('Connected to the MySQL server.');
-})
+
+
+
+// Database connection
+
+/**
+ *
+ * const db = mysql.createConnection({
+ *     host: "localhost",
+ *     user: "root",
+ *     password: "Mary@31547207",
+ *     database: "photo_upload"
+ * })
+ *
+ *
+ * db.connect(function (err) {
+ *     if (err) {
+ *         return console.error('error: ' + err.message);
+ *     }
+ *     console.log('Connected to the MySQL server.');
+ * })
+ */
+
 
 //! Use of Multer
 var storage = multer.diskStorage({
     destination: (req, file, callBack) => {
-        callBack(null, './public/images/')     // './public/images/' directory name where save the file
+        callBack(null, './images/')     // './public/images/' directory name where save the file
     },
     filename: (req, file, callBack) => {
         callBack(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
@@ -47,31 +61,60 @@ var upload = multer({
 //! Routes start
 
 //route for Home page
-app.get('/', (req, res) => {
+app.get('/photos', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
 //@type   POST
 //route for post data
-app.post("/post", upload.single('image'), (req, res) => {
+// https://core.posta.co.ke
+app.post("/photos/post", upload.single('image'), (req, res) => {
     if (!req.file) {
         console.log("No file upload");
     } else {
-        console.log(req.file.filename)
-        var imgsrc = 'http://127.0.0.1:3000/images/' + req.file.filename
-        var insertData = "INSERT INTO photos(Photo)VALUES(?)"
-        db.query(insertData, [imgsrc], (err, result) => {
-            if (err) throw err
-            console.log(req.file.filename)
+        let payload = {
+            // http://127.0.0.1:3000/images/image-1656502176366.png
+            Photo: "https://core.posta.co.ke/photos/images/"+req.file.filename,
+        }
+        photo().create(payload)
+            .then(function (result){
+                res.send(result);
 
-            fs.unlinkSync('./public/images/' + req.file.filename);
+            },function (err){
+                console.log(err)
+                res.status(400)
+                res.send("an error occurred")
 
-            res.send("file uploaded");
+            })
 
-
-        })
     }
 });
+
+
+
+
+
+const sqlConfig = {
+    user: "postapesa",
+    password: "B0st@5296",
+    database: "photos",
+    server: '41.76.175.65',
+    pool: {
+        max: 10,
+        min: 0,
+        idleTimeoutMillis: 30000
+    },
+    options: {
+        encrypt: true, // for azure
+        trustServerCertificate: false // change to true for local dev / self-signed certs
+    }
+}
+
+//let data = sql.connect(sqlConfig);
+
+
+
+
 
 //create connection
 const PORT = process.env.PORT || 3000
