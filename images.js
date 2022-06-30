@@ -44,6 +44,9 @@ app.use('/photos/images', express.static('images'));
  */
 
 
+// IMG_0605.jpg
+
+
 //! Use of Multer
 var storage = multer.diskStorage({
     destination: (req, file, callBack) => {
@@ -91,6 +94,18 @@ app.post("/photos/post", upload.single('image'), (req, res) => {
 });
 
 
+app.get('/photos/fetch', (req, res) => {
+photo().findAll()
+    .then(function (result){
+        res.send(result);
+
+    },function (err){
+        console.log(err)
+        res.status(400)
+        res.send("an error occurred")
+
+    })
+});
 
 
 
