@@ -116,6 +116,6 @@ const sqlConfig = {
 
 
 
-//create connection
-const PORT = process.env.PORT || 3000
-app.listen(PORT, () => console.log(`Server is running at port ${PORT}`))
+//create connection 192.168.0.204
+const PORT = process.env.PORT || 6000
+app.listen(PORT, "192.168.0.204",() => console.log(`Server is running at port ${PORT}`))
