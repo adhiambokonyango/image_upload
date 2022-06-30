@@ -18,7 +18,7 @@ app.use(bodyparser.urlencoded({
 }))
 
 app.use(express.static('public'));
-app.use('/images', express.static('images'));
+app.use('/photos/images', express.static('images'));
 
 
 
@@ -73,7 +73,7 @@ app.post("/photos/post", upload.single('image'), (req, res) => {
         console.log("No file upload");
     } else {
         let payload = {
-            // http://127.0.0.1:3000/images/image-1656502176366.png
+            // http://127.0.0.1:6000/images/image-1656502176366.png
             Photo: "https://core.posta.co.ke/photos/images/"+req.file.filename,
         }
         photo().create(payload)
@@ -98,7 +98,7 @@ const sqlConfig = {
     user: "postapesa",
     password: "B0st@5296",
     database: "photos",
-    server: '41.76.175.65',
+    server: '',
     pool: {
         max: 10,
         min: 0,
@@ -117,5 +117,5 @@ const sqlConfig = {
 
 
 //create connection
-const PORT = process.env.PORT || 6000
-app.listen(PORT, "192.168.0.204",() => console.log(`Server is running at port ${PORT}`))
+const PORT = process.env.PORT || 3000
+app.listen(PORT, () => console.log(`Server is running at port ${PORT}`))
