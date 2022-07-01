@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const bodyparser = require('body-parser')
 const mysql = require('mysql')
+const mysql_eight = require('mysql8')
 const multer = require('multer')
 const path = require('path')
 const fs = require('fs');
@@ -25,23 +26,28 @@ app.use('/photos/images', express.static('images'));
 
 // Database connection
 
-/**
- *
- * const db = mysql.createConnection({
- *     host: "localhost",
- *     user: "root",
- *     password: "Mary@31547207",
- *     database: "photo_upload"
- * })
- *
- *
- * db.connect(function (err) {
- *     if (err) {
- *         return console.error('error: ' + err.message);
- *     }
- *     console.log('Connected to the MySQL server.');
- * })
- */
+
+
+  const db = mysql_eight.createConnection({
+      host: "41.76.175.65",
+      user: "mary",
+     password: "B0st#20zz",
+      database: "versions",
+
+      options: {
+          encrypt: false,
+          trustServerCertificate: true,
+      }
+  })
+
+
+  db.connect(function (err) {
+      if (err) {
+          return console.error('error: ' + err.message);
+      }
+      console.log('Connected to the MySQL server.');
+  })
+
 
 
 // IMG_0605.jpg
@@ -109,28 +115,12 @@ photo().findAll()
 
 
 
-const sqlConfig = {
-    user: "postapesa",
-    password: "B0st@5296",
-    database: "photos",
-    server: '',
-    pool: {
-        max: 10,
-        min: 0,
-        idleTimeoutMillis: 30000
-    },
-    options: {
-        encrypt: true, // for azure
-        trustServerCertificate: false // change to true for local dev / self-signed certs
-    }
-}
-
-//let data = sql.connect(sqlConfig);
 
 
 
 
 
 //create connection 192.168.0.204
+// "192.168.0.204",
 const PORT = process.env.PORT || 6000
-app.listen(PORT, "192.168.0.204",() => console.log(`Server is running at port ${PORT}`))
+app.listen(PORT, () => console.log(`Server is running at port ${PORT}`))
